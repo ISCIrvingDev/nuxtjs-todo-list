@@ -8,8 +8,12 @@
 * Configurar el objeto "app" de acuerdo a las necesidades
   ** Archivo: "nuxt.config.ts"
 
-3) Configurar el Layout principal
+3) Configurar el Layout y el Page ("/") principal
 * Ref:
   ** https://nuxt.com/docs/4.x/guide/directory-structure/app/app
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/app/pages
   ** https://nuxt.com/docs/4.x/guide/directory-structure/app/layouts
-* Archivo: "layouts\default.vue"
+* Archivos:
+* "app\app.vue"
+* "app\layouts\default.vue"
+* "app\pages\index.vue"
