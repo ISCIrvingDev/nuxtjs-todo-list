@@ -1,0 +1,15 @@
+  // Pasos
+1) Crear un nuevo proyecto NuxtJS
+* npm create nuxt@latest <project-name>
+
+2) Configurar el SEO en el tag "head"
+* Ref:
+  ** https://nuxt.com/docs/4.x/getting-started/seo-meta
+* Configurar el objeto "app" de acuerdo a las necesidades
+  ** Archivo: "nuxt.config.ts"
+
+3) Configurar el Layout principal
+* Ref:
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/app/app
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/app/layouts
+* Archivo: "layouts\default.vue"
