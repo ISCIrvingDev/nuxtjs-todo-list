@@ -1,3 +1,7 @@
+body {
+    background-color: #ecf0f1;
+}
+
 /* .w3-flat-peter-river { */
 .bg-text-blue {
     color: #fff;
@@ -8,4 +12,5 @@
 .bg-text-silver {
     color: #000;
     background-color: #ecf0f1;
+    height: 100vh;
 }

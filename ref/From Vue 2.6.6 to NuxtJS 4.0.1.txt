@@ -13,7 +13,22 @@
   ** https://nuxt.com/docs/4.x/guide/directory-structure/app/app
   ** https://nuxt.com/docs/4.x/guide/directory-structure/app/pages
   ** https://nuxt.com/docs/4.x/guide/directory-structure/app/layouts
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/app/components
 * Archivos:
 * "app\app.vue"
 * "app\layouts\default.vue"
 * "app\pages\index.vue"
+
+XXX Aqui me quede XXX
+4) * Actualizar todos los componentes de "app\components\*.vue":
+* Ref:
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/app/composables
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/app/utils
+  ** xxx
+* Usar las nuevas caracteristicas de Vue 3
+* Implementar Vertical Slice Architecture
+* Basarse en el proyecto: "quasar-employee-management"
+
+5) Implementar variables de entorno para el llamado al API
+* Ref:
+  ** https://nuxt.com/docs/4.x/guide/directory-structure/env
