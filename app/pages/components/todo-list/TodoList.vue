@@ -52,7 +52,7 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th scope="col" class="col-1">ID</th>
+            <th scope="col" class="col-1">#</th>
             <th scope="col" class="col-2">Details</th>
             <th scope="col" class="col-2">Done</th>
             <th scope="col" class="col-5">Task</th>
@@ -61,7 +61,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="row in searchFilter" :key="row.id">
+          <tr v-for="(row, index) in searchFilter" :key="index">
             <th scope="row">{{ rows.indexOf(row) + 1 }}</th>
             <th scope="row">
               <a
@@ -90,7 +90,7 @@
               <input
                 id="updateTask"
                 v-model="row.task"
-                class="rounded bg-text-silver bg-text-silver border-0"
+                class="rounded border-0"
                 :class="{ taskDone: row.done }"
                 type="text"
                 maxlength="25"
@@ -128,6 +128,7 @@
 </template>
 
 <script setup lang="ts">
+// * Nota: No es necesario importar los componentes, Nuxt lo hace de manera automatica
 // import ConfirmModal from "./ConfirmModal.vue";
 // import Alert from "./Alert.vue";
 // import DescriptionModal from "./DescriptionModal.vue";
@@ -135,10 +136,14 @@
 /*
  * Vue
  */
-import { computed, watch, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 
 // * Models
 import { TaskModelDefault, TaskModel } from "./todo-list.models";
+
+// * Variables de entorno
+const env = useRuntimeConfig();
+const apiUrl = env.public.apiUrl;
 
 // * Variables
 const formData = ref<{ task: string; description: string }>({
@@ -185,60 +190,16 @@ const searchFilter = computed(() =>
   })
 );
 
-// * Watch
-watch(rows, async (newVal /*, oldVal*/) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  requestToServer.value === "POST"
-    ? // fetch('http://localhost:3000/Task', {
-      fetch("/Task", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // credentials: 'include',
-        body: JSON.stringify(newVal[newVal.length - 1]),
-      })
-        .then((res) => res.json())
-        .then((info) => {
-          // Object is possibly 'undefined'.ts-plugin(2532) - Error (TS2532)
-          newVal[newVal.length - 1]!._id = info._id;
-
-          msn.value = "Your data has been created correctly";
-          type.value = "success";
-          if (!show.value) show.value = !show.value;
-        })
-        .catch((err) => console.log(err))
-    : requestToServer.value === "DELETE"
-    ? // fetch('http://localhost:3000/Task', {
-      fetch("/Task", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        // credentials: 'include',
-        body: JSON.stringify({
-          _id: selectedRow.value._id,
-        }),
-      })
-        .then((res) => res.json())
-        .then((info) => {
-          msn.value = info;
-          type.value = "success";
-          if (!show.value) show.value = !show.value;
-        })
-        .catch((err) => console.log(err))
-    : requestToServer.value === "PUT"
-    ? console.log("Llego aqui: ", selectedRow.value.done)
-    : console.log("Datos cargados correctamente");
-});
-
 // * OnMounted
 onMounted(() => {
-  // fetch('http://localhost:3000/Task', {
-  fetch("/Task", {
+  fetch(`${apiUrl}/api/task`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     // credentials: 'include'
   })
     .then((res) => res.json())
     .then((info) => {
-      rows.value = info;
+      rows.value = info.data;
 
       requestToServer.value = "GET";
     })
@@ -255,40 +216,56 @@ const addTask = (/*e: Event*/) => {
   */
 
   if (formData.value.task) {
-    requestToServer.value = "POST";
+    const newVal = new TaskModel({
+      task: formData.value.task,
+      description: formData.value.description,
+      done: false,
+    });
 
-    rows.value.push(
-      new TaskModel({
-        done: false,
-        task: formData.value.task,
-        description: formData.value.description,
+    delete newVal._id;
+
+    // fetch('http://base-url/api/task', {
+    fetch(`${apiUrl}/api/task`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // credentials: 'include',
+      body: JSON.stringify(newVal),
+    })
+      .then((res) => res.json())
+      .then((info) => {
+        newVal._id = info.data._id;
+
+        rows.value.push(newVal);
+
+        formData.value.task = "";
+        formData.value.description = "";
+
+        msn.value = "Your data has been created correctly";
+        type.value = "success";
+        if (!show.value) show.value = !show.value;
       })
-    );
-
-    formData.value.task = "";
-    formData.value.description = "";
+      .catch((err) => console.log(err));
   }
 };
 
 const updateTask = (task: TaskModel) => {
-  const updateTask: HTMLSelectElement | null = document.querySelector("#updateTask");
+  const updateTask: HTMLSelectElement | null =
+    document.querySelector("#updateTask");
   //task.task ->  La tarea a actualizar
 
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   updateTask!.checkValidity()
-    ? // fetch('http://localhost:3000/Task', {
-      fetch("/Task", {
+    ? fetch(`${apiUrl}/api/task/${task._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         // credentials: 'include',
         body: JSON.stringify({
-          _id: task._id,
           task: task.task,
         }),
       })
         .then((res) => res.json())
         .then((info) => {
-          msn.value = info;
+          msn.value = `Task successfully updated: ${info.data._id}`;
           type.value = "success";
           if (!show.value) show.value = !show.value;
         })
@@ -307,17 +284,29 @@ const setRow = (row: TaskModel) => {
 const deleteTask = () => {
   requestToServer.value = "DELETE";
 
-  rows.value.splice(rows.value.indexOf(selectedRow.value), 1);
+  fetch(`${apiUrl}/api/task/${selectedRow.value._id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    // credentials: 'include',
+  })
+    .then((res) => res.json())
+    .then((info) => {
+      rows.value.splice(rows.value.indexOf(selectedRow.value), 1);
+
+      msn.value = `Task successfully eliminated: ${info.data._id}`;
+      type.value = "success";
+
+      if (!show.value) show.value = !show.value;
+    })
+    .catch((err) => console.log(err));
 };
 
 const updateTaskDescription = (newDescription: string) => {
-  // fetch('http://localhost:3000/Task', {
-  fetch("/Task", {
+  fetch(`${apiUrl}/api/task/${selectedRow.value._id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     // credentials: 'include',
     body: JSON.stringify({
-      _id: selectedRow.value._id,
       description: newDescription,
     }),
   })
@@ -327,7 +316,7 @@ const updateTaskDescription = (newDescription: string) => {
       rows.value[rows.value.indexOf(selectedRow.value)]!.description =
         newDescription;
 
-      msn.value = info;
+      msn.value = `Task successfully updated: ${info.data._id}`;
       type.value = "success";
       if (!show.value) show.value = !show.value;
     })
@@ -335,19 +324,17 @@ const updateTaskDescription = (newDescription: string) => {
 };
 
 const updateDone = () => {
-  // fetch('http://localhost:3000/Task', {
-  fetch("/Task", {
+  fetch(`${apiUrl}/api/task/${selectedRow.value._id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     // credentials: 'include',
     body: JSON.stringify({
-      _id: selectedRow.value._id,
       done: selectedRow.value.done,
     }),
   })
     .then((res) => res.json())
     .then((info) => {
-      msn.value = info;
+      msn.value = `Task successfully updated: ${info.data._id}`;
       type.value = "success";
       if (!show.value) show.value = !show.value;
     })
