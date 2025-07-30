@@ -16,21 +16,27 @@
     <hr class="mt-5" >
 
     <footer class="container">
-      <div class="d-flex mb-5 justify-content-end align-items-center">
-        <span class="text-muted font-weight-light"
-          >Designed and developed by
-          <a
-            href="mailto:ISCIrving@hotmail.com?subject=Your%20company%20name&body=Your%20information%20contact.%0AName,%20description%20and%20requirements%20of%20the%20project"
-            class="text-decoration-none"
-            >ISCIrving@hotmail.com</a
-          ></span
-        >
+      <div class="d-flex justify-content-center align-items-center">
+        <p class="text-muted font-weight-light">
+          ©
+          <span>All Rights Reserved</span>
+        </p>
+      </div>
 
-        <a
-          href="https://www.facebook.com/ISCIrving"
-          target="_blank"
-          class="ml-2 text-decoration-none fab fa-facebook-square fa-2x"
-        />
+      <div class="d-flex justify-content-center align-items-center">
+        <span class="text-muted font-weight-light">
+          <!-- <span class="mr-1"><img src="/img/todo-list.ico" alt="App Icon" width="12" height="12"></span> -->
+
+          Designed and developed by
+
+          <a
+            href="https://ivin-dev.com/"
+            target="_blank"
+            class="text-decoration-none"
+            >Ivin Dev</a
+          >
+        </span
+        >
       </div>
     </footer>
   </div>
